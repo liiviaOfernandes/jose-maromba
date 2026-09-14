@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0e0d" />
+  <meta name="description" content="Maromba Duo - controle de treinos, séries, cargas e intervalos para José e Livia." />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <title>Maromba Duo</title>
+</head>
+<body>
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <main id="loginView" class="login-view">
+    <section class="login-card">
+      <div class="login-brand">
+        <div class="brand-mark" aria-hidden="true">M²</div>
+        <div>
+          <span class="eyebrow">TREINO • FOCO • EVOLUÇÃO</span>
+          <h1>Maromba <strong>Duo</strong></h1>
+        </div>
+      </div>
+      <p class="login-copy">Dois perfis, dois treinos e todo o progresso salvo separadamente.</p>
+
+      <form id="loginForm" class="login-form">
+        <label>
+          <span>E-mail</span>
+          <input id="emailInput" type="email" autocomplete="username" placeholder="seuemail@exemplo.com" required />
+        </label>
+        <label>
+          <span>Senha</span>
+          <div class="password-wrap">
+            <input id="passwordInput" type="password" autocomplete="current-password" placeholder="••••••••" required />
+            <button type="button" id="togglePassword" class="icon-button" aria-label="Mostrar senha">👁</button>
+          </div>
+        </label>
+        <p id="loginError" class="form-error" role="alert"></p>
+        <button type="submit" class="primary-button wide">Entrar no treino</button>
+      </form>
+      <div class="love-note">José + Livia • foco em dupla ♡</div>
+    </section>
+  </main>
+
+  <div id="appView" class="app-shell hidden">
+    <header class="topbar">
+      <div>
+        <span class="eyebrow">BOM TREINO</span>
+        <h2 id="helloTitle">Bora treinar!</h2>
+      </div>
+      <button id="logoutBtn" class="avatar-button" title="Sair"><span id="avatarButtonText">M</span></button>
+    </header>
+
+    <section id="homeScreen" class="screen active-screen">
+      <div class="hero-card">
+        <div>
+          <span class="chip" id="todayChip">HOJE</span>
+          <h3 id="todayWorkoutTitle">Treino</h3>
+          <p id="todayWorkoutSubtitle">Seu treino do dia aparece aqui.</p>
+        </div>
+        <div class="hero-orbit" aria-hidden="true">
+          <span id="heroEmoji">💪</span>
+        </div>
+        <button id="startTodayBtn" class="primary-button">Começar treino</button>
+      </div>
+
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">SEMANA</span>
+          <h3>Plano de treino</h3>
+        </div>
+      </div>
+      <div id="weekGrid" class="week-grid"></div>
+
+      <div class="section-heading compact">
+        <div>
+          <span class="eyebrow">PROGRESSO</span>
+          <h3>Seu histórico</h3>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <article class="stat-card">
+          <span class="stat-icon">✓</span>
+          <strong id="completedCount">0</strong>
+          <small>treinos concluídos</small>
+        </article>
+        <article class="stat-card">
+          <span class="stat-icon">⏱</span>
+          <strong id="totalMinutes">0</strong>
+          <small>minutos registrados</small>
+        </article>
+      </div>
+
+      <div class="tip-card">
+        <span>⚡</span>
+        <div>
+          <strong>Dica rápida</strong>
+          <p>Marque cada série. O intervalo começa automaticamente e você pode ajustar entre 45 s e 2 min.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="workoutsScreen" class="screen">
+      <div class="page-title">
+        <span class="eyebrow">FICHAS</span>
+        <h2>Seus treinos</h2>
+        <p id="workoutsIntro">Sua divisão semanal aparece aqui.</p>
+      </div>
+      <div id="workoutCards" class="workout-list"></div>
+    </section>
+
+    <section id="historyScreen" class="screen">
+      <div class="page-title">
+        <span class="eyebrow">EVOLUÇÃO</span>
+        <h2>Histórico</h2>
+        <p>Treinos concluídos e cargas salvas separadamente por perfil.</p>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </section>
+
+    <section id="profileScreen" class="screen">
+      <div class="page-title">
+        <span class="eyebrow">AJUSTES</span>
+        <h2>Preferências</h2>
+        <p>Deixe o app do seu jeito durante o treino.</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-avatar"><span id="profileName">Perfil</span></div>
+        <div><span class="eyebrow">PERFIL ATIVO</span><strong id="profileEmail">—</strong></div>
+      </div>
+
+      <div class="settings-card">
+        <div class="setting-row">
+          <div><strong>Som no fim do intervalo</strong><span>Avisa quando o descanso terminar.</span></div>
+          <label class="switch"><input id="soundToggle" type="checkbox" checked><span></span></label>
+        </div>
+        <div class="setting-row">
+          <div><strong>Vibração</strong><span>Usa a vibração do celular quando disponível.</span></div>
+          <label class="switch"><input id="vibrationToggle" type="checkbox" checked><span></span></label>
+        </div>
+        <div class="setting-row">
+          <div><strong>Manter tela ativa</strong><span>Tenta evitar que a tela apague durante o timer.</span></div>
+          <label class="switch"><input id="wakeToggle" type="checkbox" checked><span></span></label>
+        </div>
+      </div>
+      <div class="source-card">
+        <strong>Plano atual</strong>
+        <p id="sourceText">Treinos personalizados.</p>
+      </div>
+    </section>
+
+    <nav class="bottom-nav" aria-label="Navegação principal">
+      <button class="nav-item active" data-target="homeScreen"><span>⌂</span><small>Início</small></button>
+      <button class="nav-item" data-target="workoutsScreen"><span>▤</span><small>Treinos</small></button>
+      <button class="nav-item" data-target="historyScreen"><span>↗</span><small>Histórico</small></button>
+      <button class="nav-item" data-target="profileScreen"><span>⚙</span><small>Ajustes</small></button>
+    </nav>
+  </div>
+
+  <section id="sessionView" class="session-view hidden" aria-live="polite">
+    <header class="session-header">
+      <button id="closeSessionBtn" class="circle-button" aria-label="Voltar">←</button>
+      <div>
+        <span id="sessionLabel" class="eyebrow">TREINO</span>
+        <h2 id="sessionTitle">Treino</h2>
+      </div>
+      <span id="sessionElapsed" class="elapsed-pill">00:00</span>
+    </header>
+
+    <div class="mobility-banner"><span>↻</span><div><strong id="warmupTitle">Aquecimento primeiro</strong><small id="warmupText">Faça mobilidade antes das séries.</small></div></div>
+
+    <div class="session-progress-wrap">
+      <div class="session-progress-meta"><span>Progresso</span><strong id="sessionProgressText">0%</strong></div>
+      <div class="progress-track"><div id="sessionProgressBar" class="progress-fill"></div></div>
+    </div>
+
+    <div id="exerciseList" class="exercise-list"></div>
+
+    <div class="finish-wrap">
+      <button id="finishWorkoutBtn" class="primary-button wide">Concluir treino</button>
+    </div>
+  </section>
+
+  <aside id="timerPanel" class="timer-panel hidden" aria-label="Timer de intervalo">
+    <div class="timer-topline">
+      <div><span class="eyebrow">INTERVALO</span><strong id="timerExerciseName">Próxima série</strong></div>
+      <button id="closeTimerBtn" class="circle-button small">×</button>
+    </div>
+    <div id="timerRing" class="timer-ring">
+      <div class="timer-center">
+        <strong id="timerText">01:30</strong>
+        <span>descanso</span>
+      </div>
+    </div>
+    <div class="timer-presets" role="group" aria-label="Tempo do intervalo">
+      <button data-seconds="45">45 s</button>
+      <button data-seconds="60">1 min</button>
+      <button data-seconds="90" class="active">1:30</button>
+      <button data-seconds="120">2 min</button>
+    </div>
+    <div class="timer-actions">
+      <button id="resetTimerBtn" class="secondary-button">Reiniciar</button>
+      <button id="pauseTimerBtn" class="primary-button">Pausar</button>
+    </div>
+    <button id="skipTimerBtn" class="text-button">Pular intervalo</button>
+  </aside>
+
+  <div id="videoModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="videoTitle">
+    <div class="video-modal">
+      <div class="modal-head">
+        <div><span class="eyebrow">COMO FAZER</span><h3 id="videoTitle">Exercício</h3></div>
+        <button id="closeVideoBtn" class="circle-button">×</button>
+      </div>
+      <div id="videoBox" class="video-box"></div>
+      <div id="videoTips" class="video-tips"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
