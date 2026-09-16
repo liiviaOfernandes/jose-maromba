@@ -74,7 +74,7 @@ const PROFILES = {
     ]
   },
 
-  Livia: {
+  livia: {
     id: 'livia',
     name: 'Livia',
     initial: 'L',
