@@ -186,7 +186,15 @@ function applyProfileTheme() {
   $('sourceText').textContent = p.sourceText;
   $('heroEmoji').textContent = p.heroEmoji;
   document.title = `${p.name} Maromba`;
+  const healthBtn = $('healthNavBtn');
+  if (healthBtn) {
+    const isLivia = p.id === 'livia';
+    healthBtn.classList.toggle('hidden', !isLivia);
+    document.querySelector('.bottom-nav')?.classList.toggle('five-items', isLivia);
+    if (isLivia) renderHealth();
+  }
 }
+
 
 function migrateLegacyJoseData() {
   if (state.profileId !== 'jose') return;
@@ -332,9 +340,11 @@ function renderWorkouts() {
 }
 
 function switchScreen(id, scroll=true) {
+  if (id === 'healthScreen' && state.profileId !== 'livia') id = 'homeScreen';
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active-screen', s.id===id));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.target===id));
   if (id==='historyScreen') renderHistory();
+  if (id==='healthScreen') renderHealth();
   if (scroll) window.scrollTo({top:0,behavior:'smooth'});
 }
 document.querySelectorAll('.nav-item').forEach(btn=>btn.addEventListener('click',()=>switchScreen(btn.dataset.target)));
@@ -529,6 +539,120 @@ window.openVideo=openVideo;
 function closeVideo(){ $('videoModal').classList.add('hidden'); $('videoBox').innerHTML=''; }
 $('closeVideoBtn').addEventListener('click',closeVideo);
 $('videoModal').addEventListener('click',(e)=>{ if(e.target===$('videoModal')) closeVideo(); });
+
+
+
+// ===== Acompanhamento pessoal da Livia =====
+function healthKey(name){ return `maromba_livia_health_${name}`; }
+function getHealth(name){ try { return JSON.parse(localStorage.getItem(healthKey(name)) || '[]'); } catch(e){ return []; } }
+function setHealth(name,value){ localStorage.setItem(healthKey(name), JSON.stringify(value)); }
+function brDate(iso){ if(!iso) return '—'; const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
+function todayIso(){ return new Date().toISOString().slice(0,10); }
+
+function renderHealth(){
+  if(state.profileId !== 'livia') return;
+  const doseDate=$('doseDate'), measureDate=$('measureDate');
+  if(doseDate && !doseDate.value) doseDate.value=todayIso();
+  if(measureDate && !measureDate.value) measureDate.value=todayIso();
+  const doses=getHealth('doses').sort((a,b)=>b.date.localeCompare(a.date));
+  const measures=getHealth('measures').sort((a,b)=>b.date.localeCompare(a.date));
+  if($('doseSummary')){
+    const last=doses[0], prev=doses[1];
+    const delta=last&&prev ? Number(last.weight)-Number(prev.weight) : null;
+    $('doseSummary').innerHTML=`<div class="summary-pill"><small>Último peso</small><strong>${last ? `${Number(last.weight).toFixed(1)} kg` : '—'}</strong></div><div class="summary-pill"><small>Variação semanal</small><strong>${delta===null?'—':`${delta>0?'+':''}${delta.toFixed(1)} kg`}</strong></div>`;
+  }
+  if($('doseHistory')) $('doseHistory').innerHTML=doses.slice(0,8).map((d,i)=>`<div class="health-row"><div><strong>${brDate(d.date)} • ${escapeHtml(String(d.dose))} mg</strong><p>${Number(d.weight).toFixed(1)} kg${d.note?` • ${escapeHtml(d.note)}`:''}</p></div><button type="button" onclick="deleteHealth('doses',${i})" aria-label="Excluir">×</button></div>`).join('') || '<div class="history-empty">Ainda não há semanas registradas.</div>';
+  if($('measureHistory')) $('measureHistory').innerHTML=measures.slice(0,6).map((m,i)=>`<div class="health-row"><div><strong>${brDate(m.date)}</strong><p>Cintura ${fmtMeasure(m.waist)} • Quadril ${fmtMeasure(m.hip)} • Abdômen ${fmtMeasure(m.abdomen)}<br>Braços E/D ${fmtMeasure(m.armL)} / ${fmtMeasure(m.armR)} • Coxas E/D ${fmtMeasure(m.thighL)} / ${fmtMeasure(m.thighR)} • Panturrilha ${fmtMeasure(m.calf)}</p></div><button type="button" onclick="deleteHealth('measures',${i})" aria-label="Excluir">×</button></div>`).join('') || '<div class="history-empty">Ainda não há medidas mensais registradas.</div>';
+  updatePdfStatus();
+}
+function fmtMeasure(v){ return v!==undefined && v!=='' && v!==null ? `${Number(v).toFixed(1)} cm` : '—'; }
+function deleteHealth(kind,index){
+  if(state.profileId!=='livia') return;
+  const arr=getHealth(kind).sort((a,b)=>b.date.localeCompare(a.date));
+  if(!confirm('Excluir este registro?')) return;
+  arr.splice(index,1); setHealth(kind,arr); renderHealth();
+}
+window.deleteHealth=deleteHealth;
+
+$('doseForm')?.addEventListener('submit',e=>{
+  e.preventDefault(); if(state.profileId!=='livia') return;
+  const record={date:$('doseDate').value,dose:Number($('doseMg').value),weight:Number($('weeklyWeight').value),note:$('doseNote').value.trim()};
+  const arr=getHealth('doses');
+  const idx=arr.findIndex(x=>x.date===record.date); if(idx>=0) arr[idx]=record; else arr.push(record);
+  setHealth('doses',arr); e.target.reset(); $('doseDate').value=todayIso(); renderHealth(); toast('Semana salva no seu acompanhamento ♡');
+});
+
+$('measureForm')?.addEventListener('submit',e=>{
+  e.preventDefault(); if(state.profileId!=='livia') return;
+  const record={date:$('measureDate').value};
+  document.querySelectorAll('[data-measure]').forEach(inp=>record[inp.dataset.measure]=inp.value===''?'':Number(inp.value));
+  const arr=getHealth('measures'); const idx=arr.findIndex(x=>x.date===record.date); if(idx>=0) arr[idx]=record; else arr.push(record);
+  setHealth('measures',arr); e.target.reset(); $('measureDate').value=todayIso(); renderHealth(); toast('Medidas mensais salvas ♡');
+});
+
+function openHealthDb(){
+  return new Promise((resolve,reject)=>{ const req=indexedDB.open('maromba-duo-private',1); req.onupgradeneeded=()=>{ if(!req.result.objectStoreNames.contains('files')) req.result.createObjectStore('files'); }; req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error); });
+}
+async function storePdf(file){ const db=await openHealthDb(); await new Promise((resolve,reject)=>{ const tx=db.transaction('files','readwrite'); tx.objectStore('files').put(file,'livia-latest-pdf'); tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error); }); localStorage.setItem(healthKey('pdfMeta'),JSON.stringify({name:file.name,size:file.size,updated:new Date().toISOString()})); }
+async function loadPdf(){ const db=await openHealthDb(); return await new Promise((resolve,reject)=>{ const tx=db.transaction('files','readonly'); const req=tx.objectStore('files').get('livia-latest-pdf'); req.onsuccess=()=>resolve(req.result||null); req.onerror=()=>reject(req.error); }); }
+async function updatePdfStatus(){ if(!$('pdfStatus')||state.profileId!=='livia') return; const meta=JSON.parse(localStorage.getItem(healthKey('pdfMeta'))||'null'); $('pdfStatus').textContent=meta?`Último PDF: ${meta.name} • salvo em ${new Date(meta.updated).toLocaleDateString('pt-BR')}.`:'Nenhum PDF importado neste dispositivo.'; }
+
+async function getPdfJs(){
+  if(window.pdfjsLib) return window.pdfjsLib;
+  const mod=await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs');
+  mod.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
+  return mod;
+}
+function numFromText(s){ const m=String(s).replace(',','.').match(/-?\d+(?:\.\d+)?/); return m?Number(m[0]):null; }
+function normalizeLabel(s){ return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim(); }
+async function parseAssessmentPdf(file){
+  const pdfjs=await getPdfJs(); const data=await file.arrayBuffer(); const doc=await pdfjs.getDocument({data}).promise;
+  const pages=[];
+  for(let p=1;p<=doc.numPages;p++){
+    const page=await doc.getPage(p); const tc=await page.getTextContent();
+    const rows=[];
+    tc.items.filter(i=>i.str?.trim()).forEach(i=>{ const x=i.transform[4], y=i.transform[5], text=i.str.trim(); let row=rows.find(r=>Math.abs(r.y-y)<2); if(!row){row={y,items:[]}; rows.push(row);} row.items.push({x,text}); });
+    rows.forEach(r=>r.items.sort((a,b)=>a.x-b.x)); pages.push(rows);
+  }
+  const allRows=pages.flat();
+  const dateItems=[]; allRows.forEach(r=>r.items.forEach(i=>{ if(/^\d{2}\/\d{2}\/\d{4}$/.test(i.text)) dateItems.push({x:i.x,date:i.text}); }));
+  const unique=[]; dateItems.forEach(d=>{ if(!unique.some(u=>u.date===d.date)) unique.push(d); });
+  const dates=unique.slice(0,6);
+  if(!dates.length) throw new Error('Não encontrei as datas da avaliação.');
+  const aliases={
+    weight:['peso atual (kg)','peso atual'], neck:['circunferencia do pescoco'], waist:['circunferencia da cintura'], hip:['circunferencia do quadril'], abdomen:['circunferencia do abdomen'], armL:['braco esq. relaxado','braco esq relaxado'], armR:['braco dir. relaxado','braco dir relaxado'], thighL:['coxa esq.','coxa esq'], thighR:['coxa dir.','coxa dir'], calf:['panturrilha']
+  };
+  const out={dates:dates.map(d=>d.date), values:{}};
+  for(const [key,keys] of Object.entries(aliases)){
+    const row=allRows.find(r=>{const t=normalizeLabel(r.items.map(i=>i.text).join(' ')); return keys.some(k=>t.includes(k));});
+    if(!row) continue;
+    out.values[key]=dates.map(d=>{
+      const candidates=row.items.map(i=>({dist:Math.abs(i.x-d.x),v:numFromText(i.text),x:i.x,text:i.text})).filter(c=>c.v!==null && c.x>d.x-18 && c.x<d.x+55).sort((a,b)=>a.dist-b.dist);
+      return candidates[0]?.v ?? null;
+    });
+  }
+  return out;
+}
+function dateToIso(br){ const [d,m,y]=br.split('/'); return `${y}-${m}-${d}`; }
+function mergePdfData(parsed){
+  const measures=getHealth('measures'); const doses=getHealth('doses');
+  parsed.dates.forEach((d,idx)=>{
+    const date=dateToIso(d); const m={date}; let has=false;
+    ['neck','waist','hip','abdomen','armL','armR','thighL','thighR','calf'].forEach(k=>{const v=parsed.values[k]?.[idx]; if(v!==null&&v!==undefined){m[k]=v;has=true;}});
+    if(has){const mi=measures.findIndex(x=>x.date===date); if(mi>=0) measures[mi]={...measures[mi],...m}; else measures.push(m);}
+    const w=parsed.values.weight?.[idx];
+    if(w!==null&&w!==undefined){ const di=doses.findIndex(x=>x.date===date); if(di>=0) doses[di].weight=w; else doses.push({date,dose:'',weight:w,note:'Peso importado da avaliação PDF'}); }
+  });
+  setHealth('measures',measures); setHealth('doses',doses);
+}
+
+$('importPdfBtn')?.addEventListener('click',async()=>{
+  if(state.profileId!=='livia') return; const file=$('pdfInput')?.files?.[0]; if(!file){toast('Selecione um PDF primeiro.');return;}
+  $('pdfStatus').textContent='Lendo o PDF...';
+  try{ const parsed=await parseAssessmentPdf(file); mergePdfData(parsed); await storePdf(file); $('pdfStatus').textContent=`PDF importado. Encontrei ${parsed.dates.length} data(s) de avaliação e atualizei peso/medidas disponíveis.`; renderHealth(); toast('PDF importado e evolução atualizada ♡'); }
+  catch(err){ console.error(err); $('pdfStatus').textContent='Não consegui ler automaticamente este formato. O PDF foi mantido no seu aparelho e você pode registrar os valores manualmente.'; try{await storePdf(file);}catch(e){} }
+});
+$('openSavedPdfBtn')?.addEventListener('click',async()=>{ if(state.profileId!=='livia') return; const file=await loadPdf(); if(!file){toast('Nenhum PDF salvo neste dispositivo.');return;} const url=URL.createObjectURL(file); window.open(url,'_blank','noopener'); setTimeout(()=>URL.revokeObjectURL(url),60000); });
 
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && state.timer.running) requestWakeLock(); });
 ['soundToggle','vibrationToggle','wakeToggle'].forEach(id=>$(id).addEventListener('change',saveSettings));

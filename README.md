@@ -1,6 +1,6 @@
 # Maromba Duo — Web App
 
-Aplicativo web mobile-first com dois perfis independentes: José e Livia. Cada usuário tem sua própria ficha, calendário semanal, cargas, preferências e histórico.
+Aplicativo web mobile-first com dois perfis independentes: José e Olivia. Cada usuário tem sua própria ficha, calendário semanal, cargas, preferências e histórico.
 
 ## Recursos
 - Dois logins personalizados.
@@ -23,7 +23,7 @@ Aplicativo web mobile-first com dois perfis independentes: José e Livia. Cada u
 - Sáb: Superiores completo
 - Dom: descanso
 
-## Divisão da Livia
+## Divisão da Olivia
 - Seg: A — Pernas e Glúteos
 - Ter: B — Costas, Ombros e Braços
 - Qua: Abdômen

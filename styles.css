@@ -243,3 +243,36 @@ button { cursor: pointer; }
 .profile-card { margin-top:14px; padding:16px 18px; border-radius:20px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:center; gap:14px; }
 .profile-avatar { min-width:70px; height:44px; padding:0 14px; display:grid; place-items:center; border-radius:14px; background:rgba(var(--accent-rgb),.1); border:1px solid rgba(var(--accent-rgb),.18); color:var(--accent); font-family:"Oswald"; font-weight:700; text-transform:uppercase; }
 .profile-card strong { display:block; margin-top:4px; font-size:13px; color:#dce3df; word-break:break-all; }
+
+
+/* Livia - acompanhamento pessoal */
+.health-warning { display:flex; gap:12px; align-items:flex-start; padding:14px 15px; border-radius:18px; border:1px solid rgba(var(--accent-rgb),.2); background:rgba(var(--accent-rgb),.06); margin-bottom:14px; }
+.health-warning > span { font-size:22px; color:var(--accent); }
+.health-warning strong { display:block; font-size:13px; }
+.health-warning p, .health-copy { color:var(--muted); font-size:12px; line-height:1.5; margin:5px 0 0; }
+.health-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.health-card { padding:18px; border-radius:22px; background:var(--surface); border:1px solid var(--line); }
+.health-card-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.health-card-head h3 { margin:3px 0 0; }
+.health-icon { width:42px; height:42px; display:grid; place-items:center; border-radius:14px; background:rgba(var(--accent-rgb),.08); border:1px solid rgba(var(--accent-rgb),.16); font-size:20px; }
+.health-form { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.health-form label { display:grid; gap:6px; }
+.health-form label > span { color:var(--muted); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; }
+.health-form input { width:100%; min-height:44px; box-sizing:border-box; border-radius:12px; border:1px solid var(--line); background:#0d1210; color:var(--text); padding:0 11px; outline:none; }
+.health-form input:focus { border-color:rgba(var(--accent-rgb),.45); }
+.health-form .full { grid-column:1/-1; }
+.mini-summary { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:14px; }
+.summary-pill { background:var(--surface-2); border:1px solid var(--line); border-radius:14px; padding:11px; }
+.summary-pill small { display:block; color:var(--muted); font-size:9px; text-transform:uppercase; font-weight:800; }
+.summary-pill strong { display:block; margin-top:4px; color:var(--accent); font-family:"Oswald"; font-size:19px; }
+.health-history { display:grid; gap:8px; margin-top:12px; }
+.health-row { padding:11px 12px; border-radius:14px; background:var(--surface-2); border:1px solid var(--line); display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+.health-row strong { font-size:12px; }
+.health-row p { margin:3px 0 0; color:var(--muted); font-size:11px; line-height:1.4; }
+.health-row button { border:0; background:transparent; color:#89958f; font-size:16px; }
+.pdf-health-card { margin-top:12px; }
+.file-input { width:100%; box-sizing:border-box; margin-top:12px; padding:11px; border-radius:13px; border:1px dashed rgba(var(--accent-rgb),.28); color:var(--muted); background:rgba(var(--accent-rgb),.03); }
+.pdf-actions { display:flex; gap:9px; margin-top:10px; flex-wrap:wrap; }
+.pdf-status { margin-top:10px; color:var(--muted); font-size:11px; line-height:1.45; }
+.bottom-nav.five-items { grid-template-columns:repeat(5,1fr); }
+@media (max-width:650px){ .health-grid{grid-template-columns:1fr;} .health-form{grid-template-columns:1fr 1fr;} .measures-form{grid-template-columns:1fr 1fr;} }
