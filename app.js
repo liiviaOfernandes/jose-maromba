@@ -134,15 +134,35 @@ const PROFILES = {
           { name: 'Extensão de Glúteo na Polia', sets: 4, reps: 15, rest: 45, search: 'extensão glúteo na polia execução correta', tip: 'Movimente o quadril sem arquear a lombar e mantenha o tronco firme.' },
           { name: 'Cadeira Abdutora', sets: 4, reps: 15, rest: 45, video: 'youtube:50qHGus1TZk', tip: 'Abra as pernas de forma controlada e não deixe as placas baterem.' }
         ]
+      },
+
+      S: {
+        id: 'S',
+        title: 'Superiores Completo',
+        warmup: 'Faça mobilidade de ombros e uma série leve dos primeiros exercícios.',
+        exercises: [
+          { name: 'Supino Reto com Halteres', sets: 3, reps: 12, rest: 90, search: 'supino reto com halteres execução correta', tip: 'Mantenha os pés apoiados e as escápulas firmes no banco.' },
+
+          { name: 'Puxada Alta Frontal', sets: 3, reps: 12, rest: 90, search: 'puxada alta frontal execução correta', tip: 'Conduza os cotovelos para baixo e evite puxar atrás da cabeça.' },
+
+          { name: 'Remada Baixa com Triângulo', sets: 3, reps: 12, rest: 90, video: 'youtube:Os_orWmhqxY', tip: 'Puxe em direção ao abdômen e mantenha o tronco estável.' },
+
+          { name: 'Desenvolvimento de Ombros', sets: 3, reps: 12, rest: 90, video: 'youtube:74HRnJ6Sdxg', tip: 'Não deixe a lombar compensar o movimento.' },
+
+          { name: 'Rosca Martelo', sets: 3, reps: 12, rest: 60, search: 'rosca martelo execução correta', tip: 'Mantenha os cotovelos junto ao corpo.' },
+
+          { name: 'Tríceps Corda', sets: 3, reps: 12, rest: 60, search: 'triceps corda execução correta', tip: 'Mantenha os cotovelos fixos e abra a corda no final.' }
+        ]
       }
     },
+
     weekPlan: [
       { day: 'Seg', workout: 'A' },
       { day: 'Ter', workout: 'B' },
       { day: 'Qua', workout: 'ABS' },
       { day: 'Qui', workout: 'C' },
       { day: 'Sex', workout: 'A' },
-      { day: 'Sáb', workout: null },
+      { day: 'Sáb', workout: 'S' },
       { day: 'Dom', workout: null }
     ]
   }
