@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0e0d" />
-  <meta name="description" content="Maromba Duo - controle de treinos, séries, cargas e intervalos para José e Livia." />
+  <meta name="description" content="Maromba Duo - treinos, calendário, frequência, cargas, intervalos e evolução." />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -115,10 +115,25 @@
 
     <section id="historyScreen" class="screen">
       <div class="page-title">
-        <span class="eyebrow">EVOLUÇÃO</span>
-        <h2>Histórico</h2>
-        <p>Treinos concluídos e cargas salvas separadamente por perfil.</p>
+        <span class="eyebrow">FREQUÊNCIA + TEMPO</span>
+        <h2>Calendário de treinos</h2>
+        <p>Veja os dias em que treinou, faltou, descansou e quanto tempo ficou em cada treino.</p>
       </div>
+
+      <article class="calendar-card">
+        <div class="calendar-head">
+          <button id="calendarPrev" class="circle-button small" type="button" aria-label="Mês anterior">←</button>
+          <div><span class="eyebrow">MÊS</span><h3 id="calendarMonth">—</h3></div>
+          <button id="calendarNext" class="circle-button small" type="button" aria-label="Próximo mês">→</button>
+        </div>
+        <div class="calendar-weekdays"><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span></div>
+        <div id="calendarGrid" class="calendar-grid"></div>
+        <div class="calendar-legend"><span><i class="legend-dot done"></i>Foi</span><span><i class="legend-dot missed"></i>Faltou</span><span><i class="legend-dot planned"></i>Programado</span><span><i class="legend-dot rest"></i>Descanso</span></div>
+        <div id="calendarSummary" class="calendar-summary"></div>
+        <button id="calendarToday" class="secondary-button wide" type="button">Voltar para este mês</button>
+      </article>
+
+      <div class="section-heading compact"><div><span class="eyebrow">SESSÕES</span><h3>Treinos concluídos</h3></div></div>
       <div id="historyList" class="history-list"></div>
     </section>
 
