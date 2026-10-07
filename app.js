@@ -5,8 +5,8 @@ const PROFILES = {
     initial: 'J',
     email: 'jose@gostoso.com',
     passwordHash: 'c96ca3f7cdbdd1049791c01676b5b59267dd4ad1a8cbe772802b721d2388e800',
-    accent: '#c8ff35',
-    accentRgb: '200,255,53',
+    accent: '#b9c0c4',
+    accentRgb: '185,192,196',
     greeting: 'Vai pra cima, José!',
     heroEmoji: '💪',
     sourceText: 'Rotina atual: peito/ombros/tríceps; costas/bíceps; inferior; core + cardio leve; superior completo; inferior completo; domingo descanso. Exercícios de força em 3×6–10, conforme a ficha enviada.',
@@ -95,11 +95,11 @@ const PROFILES = {
   livia: {
     id:'livia', name:'Livia', initial:'L', email:'livia@maromba.com',
     passwordHash:'249a553992739e990453f86f016306d9cd7f504df5605645180a8610660aaf6e',
-    accent:'#e20980', accentRgb:'226,9,128', greeting:'Bora, Livia! ✨', heroEmoji:'🏋️‍♀️',
+    accent:'#ff6f9f', accentRgb:'255,111,159', greeting:'Bora, Livia! ✨', heroEmoji:'🏋️‍♀️',
     sourceText:'Plano alternado por semana: uma semana começa com inferiores e a seguinte com superiores. Dois treinos diferentes de superiores, dois de inferiores e um condicionamento funcional leve. O treino de braços ajuda a fortalecer e dar forma, mas a redução de gordura acontece de forma geral, não apenas em bíceps ou tríceps.',
     workouts:{
       GLUTE: {
-        id:'GLUTE', shortLabel:'GLÚT', title:'Glúteos',
+        id:'GLUTE', shortLabel:'A', title:'Glúteos',
         warmup:'Comece com mobilidade de quadril e use as séries de aquecimento indicadas antes das séries válidas.',
         exercises:[
           { name:'Cadeira Abdutora', sets:6, warmupSets:2, reps:'2×20 aquecimento + 4×15', scheme:'2 séries de aquecimento × 20 + 4 séries × 15', rest:60, video:'youtube:50qHGus1TZk', tip:'Controle a abertura e não deixe as placas baterem.' },
@@ -110,7 +110,7 @@ const PROFILES = {
         ]
       },
       UPA: {
-        id:'UPA', shortLabel:'BRAÇO A', title:'Superiores A — Costas, Bíceps e Tríceps',
+        id:'UPA', shortLabel:'B', title:'Superiores A — Costas, Bíceps e Tríceps',
         warmup:'Mobilidade de ombros e uma série leve de puxada.',
         exercises:[
           { name:'Puxada Alta Frontal', sets:3, reps:'10–12', rest:75, search:'puxada alta frontal execução correta', tip:'Puxe em direção ao peito sem balançar o tronco.' },
@@ -122,7 +122,7 @@ const PROFILES = {
         ]
       },
       HYROX: {
-        id:'HYROX', shortLabel:'FUNC', title:'Funcional Leve — estilo HYROX',
+        id:'HYROX', shortLabel:'H', title:'Funcional Leve — estilo HYROX',
         warmup:'Versão mais curta e controlada, sem foco competitivo. Ajuste o ritmo para terminar se sentindo bem, não exausta.',
         exercises:[
           { name:'Caminhada Inclinada', sets:1, reps:'8 min', scheme:'8 min • ritmo confortável', rest:45, search:'caminhada inclinada esteira', tip:'Use inclinação confortável e mantenha respiração controlada.' },
@@ -134,7 +134,7 @@ const PROFILES = {
         ]
       },
       LOWER: {
-        id:'LOWER', shortLabel:'PERNA', title:'Pernas — Quadríceps e Posteriores',
+        id:'LOWER', shortLabel:'C', title:'Pernas — Quadríceps e Posteriores',
         warmup:'Mobilidade de quadril/tornozelo e uma série leve dos primeiros exercícios.',
         exercises:[
           { name:'Leg Press 45°', sets:3, reps:12, rest:90, video:'youtube:c74ubBbL3zU', tip:'Mantenha lombar apoiada e controle a amplitude.' },
@@ -145,7 +145,7 @@ const PROFILES = {
         ]
       },
       UPB: {
-        id:'UPB', shortLabel:'BRAÇO B', title:'Superiores B — Peito, Ombros e Braços',
+        id:'UPB', shortLabel:'B2', title:'Superiores B — Peito, Ombros e Braços',
         warmup:'Mobilidade de ombros e uma série leve de supino/desenvolvimento.',
         exercises:[
           { name:'Supino na Máquina ou Halteres', sets:3, reps:'10–12', rest:75, search:'supino máquina execução correta', tip:'Escápulas firmes e movimento controlado.' },
@@ -177,7 +177,9 @@ const state = {
   sessionTicker: null,
   completedSets: {},
   timer: { running: false, total: 90, remaining: 90, interval: null, exerciseName: '' },
-  wakeLock: null
+  wakeLock: null,
+  homeCalendarCursor: new Date(),
+  selectedHomeDate: new Date()
 };
 
 function profile() { return PROFILES[state.profileId]; }
@@ -226,19 +228,20 @@ function applyProfileTheme() {
   if (!p) return;
   document.documentElement.style.setProperty('--accent', p.accent);
   document.documentElement.style.setProperty('--accent-rgb', p.accentRgb);
+  document.body.classList.toggle('profile-livia', p.id === 'livia');
+  document.body.classList.toggle('profile-jose', p.id === 'jose');
   $('helloTitle').textContent = p.greeting;
   $('avatarButtonText').textContent = p.initial;
   $('profileName').textContent = p.name;
   $('profileEmail').textContent = p.email;
   $('sourceText').textContent = p.sourceText;
-  $('heroEmoji').textContent = p.heroEmoji;
-  document.title = `${p.name} Maromba`;
+  $('heroEmoji').textContent = 'M²';
+  document.title = `${p.name} • Maromba Duo`;
   const healthBtn = $('healthNavBtn');
   if (healthBtn) {
-    const isLivia = p.id === 'livia';
-    healthBtn.classList.toggle('hidden', !isLivia);
-    document.querySelector('.bottom-nav')?.classList.toggle('five-items', isLivia);
-    if (isLivia) renderHealth();
+    healthBtn.classList.remove('hidden');
+    document.querySelector('.bottom-nav')?.classList.add('five-items');
+    renderHealth();
   }
 }
 
@@ -291,7 +294,7 @@ function showApp() {
   $('appView').classList.remove('hidden');
   $('sessionView').classList.add('hidden');
   switchScreen('homeScreen', false);
-  renderHome(); renderWorkouts(); renderHistory(); loadSettings();
+  renderHome(); renderWorkouts(); renderHistory(); renderHealth(); loadSettings(); updateNotificationButton(); setTimeout(maybeDramaticReminder, 900);
 }
 function showLogin() {
   state.profileId = null;
@@ -344,7 +347,7 @@ function renderHome() {
   const today = getTodayPlan();
   if (today?.workout) {
     const w = workouts()[today.workout];
-    $('todayChip').textContent = `HOJE • ${escapeHtml(w.shortLabel || w.id)}`;
+    $('todayChip').textContent = `HOJE • ${w.shortLabel || w.id}`;
     $('todayWorkoutTitle').textContent = w.title;
     $('todayWorkoutSubtitle').textContent = `${w.exercises.length} exercícios/blocos • ${restRangeForWorkout(w)}`;
     $('startTodayBtn').textContent = 'Começar treino';
@@ -353,18 +356,89 @@ function renderHome() {
   } else {
     $('todayChip').textContent = 'HOJE • DESCANSO';
     $('todayWorkoutTitle').textContent = 'Recuperação';
-    $('todayWorkoutSubtitle').textContent = 'Dia de descanso. Hidrate-se, durma bem e recupere.';
-    $('startTodayBtn').textContent = 'Ver treinos';
+    $('todayWorkoutSubtitle').textContent = 'Hoje o objetivo é recuperar para voltar melhor.';
+    $('startTodayBtn').textContent = 'Ver meus treinos';
     $('startTodayBtn').disabled = false;
     $('startTodayBtn').onclick = () => switchScreen('workoutsScreen');
   }
-  const todayIndex = [6,0,1,2,3,4,5][new Date().getDay()];
-  $('weekGrid').innerHTML = weekPlan().map((d,i) => `<div class="day-card ${d.workout ? 'training':''} ${i===todayIndex?'today':''}"><small>${d.day}</small><strong>${escapeHtml(workoutLabel(d.workout))}</strong></div>`).join('');
-  const history = getHistory();
-  $('completedCount').textContent = history.length;
-  const totalSec = history.reduce((sum,h)=>sum+(h.duration||0),0);
-  $('totalMinutes').textContent = Math.round(totalSec/60);
+  renderHomeCalendar();
+  renderDramaticCard();
+  const history = getHistory(), now = new Date();
+  const monthHistory = history.filter(h => { const d=new Date(h.date); return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth(); });
+  $('completedCount').textContent = monthHistory.length;
+  $('totalMinutes').textContent = Math.round(monthHistory.reduce((s,h)=>s+(h.duration||0),0)/60);
+  if ($('streakCount')) $('streakCount').textContent = calculateTrainingStreak();
 }
+function isoDateLocal(date){
+  const y=date.getFullYear(), m=String(date.getMonth()+1).padStart(2,'0'), d=String(date.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+function historyForDate(date){
+  const iso=isoDateLocal(date);
+  return getHistory().filter(h => String(h.date||'').slice(0,10)===iso);
+}
+function dayState(date){
+  const sessions=historyForDate(date);
+  if(sessions.length) return 'done';
+  const plan=getPlanForDate(date), today=new Date(), d=new Date(date);
+  today.setHours(0,0,0,0); d.setHours(0,0,0,0);
+  if(!plan?.workout) return 'rest';
+  if(d<today) return 'missed';
+  return 'planned';
+}
+function renderHomeCalendar(){
+  const cursor=state.homeCalendarCursor || new Date(), selected=state.selectedHomeDate || new Date();
+  const monthName=cursor.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  $('homeCalendarMonth').textContent=monthName.charAt(0).toUpperCase()+monthName.slice(1);
+  const days=new Date(cursor.getFullYear(),cursor.getMonth()+1,0).getDate(), todayIso=isoDateLocal(new Date());
+  $('homeCalendarStrip').innerHTML=Array.from({length:days},(_,i)=>{
+    const date=new Date(cursor.getFullYear(),cursor.getMonth(),i+1), iso=isoDateLocal(date), st=dayState(date);
+    const weekday=date.toLocaleDateString('pt-BR',{weekday:'short'}).replace('.','').slice(0,3);
+    return `<button class="flo-day ${st} ${iso===todayIso?'today':''} ${iso===isoDateLocal(selected)?'selected':''}" data-date="${iso}" type="button"><small>${weekday}</small><strong>${i+1}</strong><i></i></button>`;
+  }).join('');
+  document.querySelectorAll('.flo-day').forEach(btn=>btn.addEventListener('click',()=>{
+    const [y,m,d]=btn.dataset.date.split('-').map(Number); state.selectedHomeDate=new Date(y,m-1,d); renderHomeCalendar();
+  }));
+  renderSelectedDayStatus();
+  requestAnimationFrame(()=>{ (document.querySelector('.flo-day.selected')||document.querySelector('.flo-day.today'))?.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'}); });
+}
+function renderSelectedDayStatus(){
+  const date=state.selectedHomeDate || new Date(), sessions=historyForDate(date), plan=getPlanForDate(date), st=dayState(date);
+  const label=date.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
+  let title='Descanso', sub='Dia programado para recuperação.';
+  if(sessions.length){
+    const mins=Math.round(sessions.reduce((s,h)=>s+(h.duration||0),0)/60);
+    title='Treino concluído'; sub=`${sessions.map(s=>s.title||s.workout).join(' • ')} • ${Math.max(1,mins)} min`;
+  } else if(plan?.workout){
+    const w=workouts()[plan.workout];
+    title=st==='missed'?'Treino não registrado':w?.title || 'Treino programado';
+    sub=st==='missed'?'Sem sessão concluída neste dia.':`${w?.shortLabel||w?.id} • ${w?.exercises?.length||0} exercícios/blocos`;
+  }
+  $('selectedDayStatus').innerHTML=`<div><small>${escapeHtml(label)}</small><strong>${escapeHtml(title)}</strong></div><span class="status-pill ${st}">${st==='done'?'feito':st==='missed'?'faltou':st==='planned'?'programado':'descanso'}</span><p>${escapeHtml(sub)}</p>`;
+}
+function calculateTrainingStreak(){
+  let streak=0; const d=new Date(); d.setHours(0,0,0,0);
+  for(let i=0;i<60;i++){
+    const plan=getPlanForDate(d), sessions=historyForDate(d);
+    if(sessions.length){streak++; d.setDate(d.getDate()-1); continue;}
+    if(!plan?.workout){d.setDate(d.getDate()-1); continue;}
+    if(i===0){d.setDate(d.getDate()-1); continue;}
+    break;
+  }
+  return streak;
+}
+function renderDramaticCard(){
+  const el=$('dramaticReminder'); if(!el) return;
+  const plan=getTodayPlan(), done=historyForDate(new Date()).length>0;
+  if(!plan?.workout || done){el.classList.add('hidden');return;}
+  const messages=profile().id==='livia'
+    ? [['Livia, o treino percebeu sua ausência.','Ele está literalmente parado esperando você tocar em “Começar treino”.'],['A sua versão de amanhã mandou um recado.','Ela pediu para você não negociar com o treino de hoje.']]
+    : [['José. Sim, estamos falando com você.','O treino de hoje continua exatamente onde você deixou: não iniciado.'],['Seu treino abriu o app sozinho. Quase.','Falta apenas você aparecer e fazer a parte difícil.']];
+  const msg=messages[new Date().getDate()%messages.length];
+  $('dramaticTitle').textContent=msg[0]; $('dramaticText').textContent=msg[1]; el.classList.remove('hidden');
+}
+$('homeCalendarPrev')?.addEventListener('click',()=>{const c=state.homeCalendarCursor;state.homeCalendarCursor=new Date(c.getFullYear(),c.getMonth()-1,1);state.selectedHomeDate=new Date(state.homeCalendarCursor);renderHomeCalendar();});
+$('homeCalendarNext')?.addEventListener('click',()=>{const c=state.homeCalendarCursor;state.homeCalendarCursor=new Date(c.getFullYear(),c.getMonth()+1,1);state.selectedHomeDate=new Date(state.homeCalendarCursor);renderHomeCalendar();});
 
 function restRangeForWorkout(w) {
   const values = [...new Set(w.exercises.map(e => e.rest).filter(Boolean))].sort((a,b)=>a-b);
@@ -392,6 +466,7 @@ function switchScreen(id, scroll=true) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active-screen', s.id===id));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.target===id));
   if (id==='historyScreen') renderHistory();
+  if (id==='healthScreen') renderHealth();
   if (id==='healthScreen') renderHealth();
   if (scroll) window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -501,13 +576,36 @@ $('finishWorkoutBtn').addEventListener('click',()=>{
   if (done < total && !confirm(`Você marcou ${done} de ${total} séries/blocos. Concluir mesmo assim?`)) return;
   const duration = Math.max(1,Math.floor((Date.now()-state.sessionStart)/1000));
   const history = getHistory();
-  const now=new Date();
-  history.unshift({ id:Date.now(), workout:state.activeWorkout, title:w.title, date:now.toISOString(), localDate:localIsoDate(now), duration, done, total });
-  localStorage.setItem(storageKey('history'),JSON.stringify(history.slice(0,80)));
-  toast(`Treino salvo, ${profile().name}! 💪`);
+  history.unshift({ id:Date.now(), workout:state.activeWorkout, title:w.title, date:new Date().toISOString(), duration, done, total });
+  localStorage.setItem(storageKey('history'),JSON.stringify(history.slice(0,120)));
+  const minutes=Math.max(1,Math.round(duration/60));
   endSession(true, true);
+  showCompletionCelebration(minutes, w.title);
 });
 
+function showCompletionCelebration(minutes,title){
+  const overlay=$('completionOverlay'); if(!overlay) return;
+  const options=profile().id==='livia'?['Mais forte que a desculpa.','Você apareceu por você.','Consistência fica bonita em você.']:['Missão cumprida. Sem discurso.','Treino feito. O resto é detalhe.','Você veio. Você fez. Registrado.'];
+  $('completionTitle').textContent=options[Math.floor(Math.random()*options.length)];
+  $('completionText').textContent=title; $('completionMinutes').textContent=minutes;
+  const layer=$('confettiLayer'); layer.innerHTML='';
+  for(let i=0;i<42;i++){const s=document.createElement('span');s.className='confetti';s.style.setProperty('--x',`${Math.random()*100}%`);s.style.setProperty('--delay',`${Math.random()*.7}s`);s.style.setProperty('--rot',`${Math.random()*540-270}deg`);s.style.setProperty('--size',`${5+Math.random()*8}px`);layer.appendChild(s);}
+  overlay.classList.remove('hidden');
+}
+$('closeCompletionBtn')?.addEventListener('click',()=>{$('completionOverlay').classList.add('hidden');renderHome();renderHistory();});
+$('completionOverlay')?.addEventListener('click',(e)=>{if(e.target===$('completionOverlay'))$('completionOverlay').classList.add('hidden');});
+function notificationSupported(){return 'Notification' in window;}
+function updateNotificationButton(){const btn=$('notificationBtn');if(!btn)return;if(!notificationSupported()){btn.textContent='Indisponível';btn.disabled=true;return;}btn.textContent=Notification.permission==='granted'?'Ativadas':Notification.permission==='denied'?'Bloqueadas':'Ativar';}
+async function requestNotifications(){if(!notificationSupported()){toast('Seu navegador não oferece notificações web.');return;}const perm=await Notification.requestPermission();updateNotificationButton();if(perm==='granted'){toast('Lembretes ativados. Agora o Maromba Duo ganhou voz.');await sendDramaticNotification(true);}else if(perm==='denied')toast('As notificações foram bloqueadas pelo navegador.');}
+async function sendDramaticNotification(test=false){
+  if(!notificationSupported()||Notification.permission!=='granted')return; const p=profile();if(!p)return;
+  const pool=p.id==='livia'?[['Livia, uma pergunta delicada.','Seu treino já aconteceu ou você está fingindo que não viu esta notificação?'],['Maromba Duo sentiu uma perturbação.','Era o seu treino de hoje ainda sem check.']]:[['José, o treino pediu para falar com você.','Ele gostaria de saber em que momento vocês dois deixaram de se ver.'],['Seu treino continua online.','Aparentemente, quem está offline é você.']];
+  const [title,body]=pool[(new Date().getDate()+new Date().getHours())%pool.length];
+  try{if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.ready;await reg.showNotification(title,{body,tag:`maromba-${p.id}-${isoDateLocal(new Date())}`,renotify:test,icon:'favicon.svg',badge:'favicon.svg'});}else new Notification(title,{body,icon:'favicon.svg'});}catch(e){console.warn(e);}
+}
+async function maybeDramaticReminder(){const plan=getTodayPlan();if(!plan?.workout||historyForDate(new Date()).length)return;const key=storageKey(`reminder_${isoDateLocal(new Date())}`);if(localStorage.getItem(key))return;if(notificationSupported()&&Notification.permission==='granted'){await sendDramaticNotification(false);localStorage.setItem(key,'1');}}
+$('notificationBtn')?.addEventListener('click',requestNotifications);
+$('testNotificationBtn')?.addEventListener('click',()=>sendDramaticNotification(true));
 function getHistory(){ return JSON.parse(localStorage.getItem(storageKey('history')) || '[]'); }
 function localIsoDate(d=new Date()){ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
 function historyLocalDate(h){ return h.localDate || localIsoDate(new Date(h.date)); }
@@ -630,119 +728,57 @@ $('videoModal').addEventListener('click',(e)=>{ if(e.target===$('videoModal')) c
 
 
 // ===== Acompanhamento pessoal da Livia =====
-function healthKey(name){ return `maromba_livia_health_${name}`; }
+function healthKey(name){ return `maromba_${state.profileId}_health_${name}`; }
 function getHealth(name){ try { return JSON.parse(localStorage.getItem(healthKey(name)) || '[]'); } catch(e){ return []; } }
 function setHealth(name,value){ localStorage.setItem(healthKey(name), JSON.stringify(value)); }
-function brDate(iso){ if(!iso) return '—'; const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
 function todayIso(){ return new Date().toISOString().slice(0,10); }
-
-function renderHealth(){
-  if(state.profileId !== 'livia') return;
-  const doseDate=$('doseDate'), measureDate=$('measureDate');
-  if(doseDate && !doseDate.value) doseDate.value=todayIso();
-  if(measureDate && !measureDate.value) measureDate.value=todayIso();
-  const doses=getHealth('doses').sort((a,b)=>b.date.localeCompare(a.date));
-  const measures=getHealth('measures').sort((a,b)=>b.date.localeCompare(a.date));
-  if($('doseSummary')){
-    const last=doses[0], prev=doses[1];
-    const delta=last&&prev ? Number(last.weight)-Number(prev.weight) : null;
-    $('doseSummary').innerHTML=`<div class="summary-pill"><small>Último peso</small><strong>${last ? `${Number(last.weight).toFixed(1)} kg` : '—'}</strong></div><div class="summary-pill"><small>Variação semanal</small><strong>${delta===null?'—':`${delta>0?'+':''}${delta.toFixed(1)} kg`}</strong></div>`;
-  }
-  if($('doseHistory')) $('doseHistory').innerHTML=doses.slice(0,8).map((d,i)=>`<div class="health-row"><div><strong>${brDate(d.date)} • ${escapeHtml(String(d.dose))} mg</strong><p>${Number(d.weight).toFixed(1)} kg${d.note?` • ${escapeHtml(d.note)}`:''}</p></div><button type="button" onclick="deleteHealth('doses',${i})" aria-label="Excluir">×</button></div>`).join('') || '<div class="history-empty">Ainda não há semanas registradas.</div>';
-  if($('measureHistory')) $('measureHistory').innerHTML=measures.slice(0,6).map((m,i)=>`<div class="health-row"><div><strong>${brDate(m.date)}</strong><p>Cintura ${fmtMeasure(m.waist)} • Quadril ${fmtMeasure(m.hip)} • Abdômen ${fmtMeasure(m.abdomen)}<br>Braços E/D ${fmtMeasure(m.armL)} / ${fmtMeasure(m.armR)} • Coxas E/D ${fmtMeasure(m.thighL)} / ${fmtMeasure(m.thighR)} • Panturrilha ${fmtMeasure(m.calf)}</p></div><button type="button" onclick="deleteHealth('measures',${i})" aria-label="Excluir">×</button></div>`).join('') || '<div class="history-empty">Ainda não há medidas mensais registradas.</div>';
-  updatePdfStatus();
-}
+function brDate(iso){ if(!iso) return '—'; const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
 function fmtMeasure(v){ return v!==undefined && v!=='' && v!==null ? `${Number(v).toFixed(1)} cm` : '—'; }
-function deleteHealth(kind,index){
+function migrateHealthData(){
   if(state.profileId!=='livia') return;
-  const arr=getHealth(kind).sort((a,b)=>b.date.localeCompare(a.date));
-  if(!confirm('Excluir este registro?')) return;
-  arr.splice(index,1); setHealth(kind,arr); renderHealth();
+  const newKey=healthKey('weekly'), oldKey='maromba_livia_health_doses';
+  if(!localStorage.getItem(newKey) && localStorage.getItem(oldKey)){try{const old=JSON.parse(localStorage.getItem(oldKey)||'[]');setHealth('weekly',old.map(x=>({date:x.date,weight:x.weight,dose:x.dose,note:x.note||''})));}catch(e){}}
 }
+function renderHealth(){
+  if(!state.profileId) return; migrateHealthData(); const isLivia=state.profileId==='livia';
+  $('healthIntro').textContent=isLivia?'Peso toda semana, medidas uma vez por mês e registro das canetas aplicadas junto do peso.':'Peso toda semana e medidas corporais uma vez por mês, com histórico separado do perfil da Livia.';
+  $('weeklyHealthTitle').textContent=isLivia?'Peso + canetas':'Peso semanal';
+  $('doseFieldWrap')?.classList.toggle('hidden',!isLivia); $('liviaPdfCard')?.classList.toggle('hidden',!isLivia);
+  const doseInput=$('doseMg'); if(doseInput) doseInput.required=false;
+  const doseDate=$('doseDate'), measureDate=$('measureDate'); if(doseDate&&!doseDate.value)doseDate.value=todayIso(); if(measureDate&&!measureDate.value)measureDate.value=todayIso();
+  const weekly=getHealth('weekly').sort((a,b)=>b.date.localeCompare(a.date)), measures=getHealth('measures').sort((a,b)=>b.date.localeCompare(a.date));
+  const last=weekly[0],prev=weekly[1],delta=last&&prev?Number(last.weight)-Number(prev.weight):null;
+  $('doseSummary').innerHTML=`<div class="summary-pill"><small>Último peso</small><strong>${last?`${Number(last.weight).toFixed(1)} kg`:'—'}</strong></div><div class="summary-pill"><small>Variação</small><strong>${delta===null?'—':`${delta>0?'+':''}${delta.toFixed(1)} kg`}</strong></div>`;
+  $('doseHistory').innerHTML=weekly.slice(0,10).map((d,i)=>`<div class="health-row"><div><strong>${brDate(d.date)}${isLivia&&d.dose!==''&&d.dose!==null&&d.dose!==undefined?` • ${escapeHtml(String(d.dose))} mg`:''}</strong><p>${Number(d.weight).toFixed(1)} kg${d.note?` • ${escapeHtml(d.note)}`:''}</p></div><button type="button" onclick="deleteHealth('weekly',${i})" aria-label="Excluir">×</button></div>`).join('')||'<div class="history-empty">Ainda não há pesos semanais registrados.</div>';
+  $('measureHistory').innerHTML=measures.slice(0,8).map((m,i)=>`<div class="health-row"><div><strong>${brDate(m.date)}</strong><p>Cintura ${fmtMeasure(m.waist)} • Quadril ${fmtMeasure(m.hip)} • Abdômen ${fmtMeasure(m.abdomen)}<br>Braços ${fmtMeasure(m.armL)} / ${fmtMeasure(m.armR)} • Coxas ${fmtMeasure(m.thighL)} / ${fmtMeasure(m.thighR)} • Panturrilha ${fmtMeasure(m.calf)}</p></div><button type="button" onclick="deleteHealth('measures',${i})" aria-label="Excluir">×</button></div>`).join('')||'<div class="history-empty">Ainda não há medidas mensais registradas.</div>';
+  if(isLivia) updatePdfStatus();
+}
+function deleteHealth(kind,index){const arr=getHealth(kind).sort((a,b)=>b.date.localeCompare(a.date));if(!confirm('Excluir este registro?'))return;arr.splice(index,1);setHealth(kind,arr);renderHealth();}
 window.deleteHealth=deleteHealth;
-
-$('doseForm')?.addEventListener('submit',e=>{
-  e.preventDefault(); if(state.profileId!=='livia') return;
-  const record={date:$('doseDate').value,dose:Number($('doseMg').value),weight:Number($('weeklyWeight').value),note:$('doseNote').value.trim()};
-  const arr=getHealth('doses');
-  const idx=arr.findIndex(x=>x.date===record.date); if(idx>=0) arr[idx]=record; else arr.push(record);
-  setHealth('doses',arr); e.target.reset(); $('doseDate').value=todayIso(); renderHealth(); toast('Semana salva no seu acompanhamento ♡');
-});
-
-$('measureForm')?.addEventListener('submit',e=>{
-  e.preventDefault(); if(state.profileId!=='livia') return;
-  const record={date:$('measureDate').value};
-  document.querySelectorAll('[data-measure]').forEach(inp=>record[inp.dataset.measure]=inp.value===''?'':Number(inp.value));
-  const arr=getHealth('measures'); const idx=arr.findIndex(x=>x.date===record.date); if(idx>=0) arr[idx]=record; else arr.push(record);
-  setHealth('measures',arr); e.target.reset(); $('measureDate').value=todayIso(); renderHealth(); toast('Medidas mensais salvas ♡');
-});
-
-function openHealthDb(){
-  return new Promise((resolve,reject)=>{ const req=indexedDB.open('maromba-duo-private',1); req.onupgradeneeded=()=>{ if(!req.result.objectStoreNames.contains('files')) req.result.createObjectStore('files'); }; req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error); });
-}
-async function storePdf(file){ const db=await openHealthDb(); await new Promise((resolve,reject)=>{ const tx=db.transaction('files','readwrite'); tx.objectStore('files').put(file,'livia-latest-pdf'); tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error); }); localStorage.setItem(healthKey('pdfMeta'),JSON.stringify({name:file.name,size:file.size,updated:new Date().toISOString()})); }
-async function loadPdf(){ const db=await openHealthDb(); return await new Promise((resolve,reject)=>{ const tx=db.transaction('files','readonly'); const req=tx.objectStore('files').get('livia-latest-pdf'); req.onsuccess=()=>resolve(req.result||null); req.onerror=()=>reject(req.error); }); }
-async function updatePdfStatus(){ if(!$('pdfStatus')||state.profileId!=='livia') return; const meta=JSON.parse(localStorage.getItem(healthKey('pdfMeta'))||'null'); $('pdfStatus').textContent=meta?`Último PDF: ${meta.name} • salvo em ${new Date(meta.updated).toLocaleDateString('pt-BR')}.`:'Nenhum PDF importado neste dispositivo.'; }
-
-async function getPdfJs(){
-  if(window.pdfjsLib) return window.pdfjsLib;
-  const mod=await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs');
-  mod.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
-  return mod;
-}
-function numFromText(s){ const m=String(s).replace(',','.').match(/-?\d+(?:\.\d+)?/); return m?Number(m[0]):null; }
-function normalizeLabel(s){ return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim(); }
+$('doseForm')?.addEventListener('submit',e=>{e.preventDefault();if(!state.profileId)return;const isLivia=state.profileId==='livia';const record={date:$('doseDate').value,weight:Number($('weeklyWeight').value),note:$('doseNote').value.trim()};if(isLivia)record.dose=$('doseMg').value===''?'':Number($('doseMg').value);const arr=getHealth('weekly');const idx=arr.findIndex(x=>x.date===record.date);if(idx>=0)arr[idx]=record;else arr.push(record);setHealth('weekly',arr);e.target.reset();$('doseDate').value=todayIso();renderHealth();toast('Semana salva na sua evolução.');});
+$('measureForm')?.addEventListener('submit',e=>{e.preventDefault();if(!state.profileId)return;const record={date:$('measureDate').value};document.querySelectorAll('[data-measure]').forEach(inp=>record[inp.dataset.measure]=inp.value===''?'':Number(inp.value));const arr=getHealth('measures');const idx=arr.findIndex(x=>x.date===record.date);if(idx>=0)arr[idx]=record;else arr.push(record);setHealth('measures',arr);e.target.reset();$('measureDate').value=todayIso();renderHealth();toast('Medidas mensais salvas.');});
+function openHealthDb(){return new Promise((resolve,reject)=>{const req=indexedDB.open('maromba-duo-private',1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('files'))req.result.createObjectStore('files');};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
+async function storePdf(file){const db=await openHealthDb();await new Promise((resolve,reject)=>{const tx=db.transaction('files','readwrite');tx.objectStore('files').put(file,'livia-latest-pdf');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});localStorage.setItem('maromba_livia_health_pdfMeta',JSON.stringify({name:file.name,size:file.size,updated:new Date().toISOString()}));}
+async function loadPdf(){const db=await openHealthDb();return await new Promise((resolve,reject)=>{const tx=db.transaction('files','readonly');const req=tx.objectStore('files').get('livia-latest-pdf');req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);});}
+async function updatePdfStatus(){if(!$('pdfStatus')||state.profileId!=='livia')return;const meta=JSON.parse(localStorage.getItem('maromba_livia_health_pdfMeta')||'null');$('pdfStatus').textContent=meta?`Último PDF: ${meta.name} • ${new Date(meta.updated).toLocaleDateString('pt-BR')}.`:'Nenhum PDF importado neste dispositivo.';}
+async function getPdfJs(){if(window.pdfjsLib)return window.pdfjsLib;const mod=await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs');mod.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';return mod;}
+function numFromText(s){const m=String(s).replace(',','.').match(/-?\d+(?:\.\d+)?/);return m?Number(m[0]):null;}
+function normalizeLabel(s){return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();}
 async function parseAssessmentPdf(file){
-  const pdfjs=await getPdfJs(); const data=await file.arrayBuffer(); const doc=await pdfjs.getDocument({data}).promise;
-  const pages=[];
-  for(let p=1;p<=doc.numPages;p++){
-    const page=await doc.getPage(p); const tc=await page.getTextContent();
-    const rows=[];
-    tc.items.filter(i=>i.str?.trim()).forEach(i=>{ const x=i.transform[4], y=i.transform[5], text=i.str.trim(); let row=rows.find(r=>Math.abs(r.y-y)<2); if(!row){row={y,items:[]}; rows.push(row);} row.items.push({x,text}); });
-    rows.forEach(r=>r.items.sort((a,b)=>a.x-b.x)); pages.push(rows);
-  }
-  const allRows=pages.flat();
-  const dateItems=[]; allRows.forEach(r=>r.items.forEach(i=>{ if(/^\d{2}\/\d{2}\/\d{4}$/.test(i.text)) dateItems.push({x:i.x,date:i.text}); }));
-  const unique=[]; dateItems.forEach(d=>{ if(!unique.some(u=>u.date===d.date)) unique.push(d); });
-  const dates=unique.slice(0,6);
-  if(!dates.length) throw new Error('Não encontrei as datas da avaliação.');
-  const aliases={
-    weight:['peso atual (kg)','peso atual'], neck:['circunferencia do pescoco'], waist:['circunferencia da cintura'], hip:['circunferencia do quadril'], abdomen:['circunferencia do abdomen'], armL:['braco esq. relaxado','braco esq relaxado'], armR:['braco dir. relaxado','braco dir relaxado'], thighL:['coxa esq.','coxa esq'], thighR:['coxa dir.','coxa dir'], calf:['panturrilha']
-  };
-  const out={dates:dates.map(d=>d.date), values:{}};
-  for(const [key,keys] of Object.entries(aliases)){
-    const row=allRows.find(r=>{const t=normalizeLabel(r.items.map(i=>i.text).join(' ')); return keys.some(k=>t.includes(k));});
-    if(!row) continue;
-    out.values[key]=dates.map(d=>{
-      const candidates=row.items.map(i=>({dist:Math.abs(i.x-d.x),v:numFromText(i.text),x:i.x,text:i.text})).filter(c=>c.v!==null && c.x>d.x-18 && c.x<d.x+55).sort((a,b)=>a.dist-b.dist);
-      return candidates[0]?.v ?? null;
-    });
-  }
+  const pdfjs=await getPdfJs(),data=await file.arrayBuffer(),doc=await pdfjs.getDocument({data}).promise,pages=[];
+  for(let p=1;p<=doc.numPages;p++){const page=await doc.getPage(p),tc=await page.getTextContent(),rows=[];tc.items.filter(i=>i.str?.trim()).forEach(i=>{const x=i.transform[4],y=i.transform[5],text=i.str.trim();let row=rows.find(r=>Math.abs(r.y-y)<2);if(!row){row={y,items:[]};rows.push(row);}row.items.push({x,text});});rows.forEach(r=>r.items.sort((a,b)=>a.x-b.x));pages.push(rows);}
+  const allRows=pages.flat(),dateItems=[];allRows.forEach(r=>r.items.forEach(i=>{if(/^\d{2}\/\d{2}\/\d{4}$/.test(i.text))dateItems.push({x:i.x,date:i.text});}));const unique=[];dateItems.forEach(d=>{if(!unique.some(u=>u.date===d.date))unique.push(d);});const dates=unique.slice(0,6);if(!dates.length)throw new Error('Não encontrei as datas da avaliação.');
+  const aliases={weight:['peso atual (kg)','peso atual'],neck:['circunferencia do pescoco'],waist:['circunferencia da cintura'],hip:['circunferencia do quadril'],abdomen:['circunferencia do abdomen'],armL:['braco esq. relaxado','braco esq relaxado'],armR:['braco dir. relaxado','braco dir relaxado'],thighL:['coxa esq.','coxa esq'],thighR:['coxa dir.','coxa dir'],calf:['panturrilha']},out={dates:dates.map(d=>d.date),values:{}};
+  for(const [key,keys] of Object.entries(aliases)){const row=allRows.find(r=>{const t=normalizeLabel(r.items.map(i=>i.text).join(' '));return keys.some(k=>t.includes(k));});if(!row)continue;out.values[key]=dates.map(d=>{const c=row.items.map(i=>({dist:Math.abs(i.x-d.x),v:numFromText(i.text),x:i.x})).filter(c=>c.v!==null&&c.x>d.x-18&&c.x<d.x+55).sort((a,b)=>a.dist-b.dist);return c[0]?.v??null;});}
   return out;
 }
-function dateToIso(br){ const [d,m,y]=br.split('/'); return `${y}-${m}-${d}`; }
-function mergePdfData(parsed){
-  const measures=getHealth('measures'); const doses=getHealth('doses');
-  parsed.dates.forEach((d,idx)=>{
-    const date=dateToIso(d); const m={date}; let has=false;
-    ['neck','waist','hip','abdomen','armL','armR','thighL','thighR','calf'].forEach(k=>{const v=parsed.values[k]?.[idx]; if(v!==null&&v!==undefined){m[k]=v;has=true;}});
-    if(has){const mi=measures.findIndex(x=>x.date===date); if(mi>=0) measures[mi]={...measures[mi],...m}; else measures.push(m);}
-    const w=parsed.values.weight?.[idx];
-    if(w!==null&&w!==undefined){ const di=doses.findIndex(x=>x.date===date); if(di>=0) doses[di].weight=w; else doses.push({date,dose:'',weight:w,note:'Peso importado da avaliação PDF'}); }
-  });
-  setHealth('measures',measures); setHealth('doses',doses);
-}
-
-$('importPdfBtn')?.addEventListener('click',async()=>{
-  if(state.profileId!=='livia') return; const file=$('pdfInput')?.files?.[0]; if(!file){toast('Selecione um PDF primeiro.');return;}
-  $('pdfStatus').textContent='Lendo o PDF...';
-  try{ const parsed=await parseAssessmentPdf(file); mergePdfData(parsed); await storePdf(file); $('pdfStatus').textContent=`PDF importado. Encontrei ${parsed.dates.length} data(s) de avaliação e atualizei peso/medidas disponíveis.`; renderHealth(); toast('PDF importado e evolução atualizada ♡'); }
-  catch(err){ console.error(err); $('pdfStatus').textContent='Não consegui ler automaticamente este formato. O PDF foi mantido no seu aparelho e você pode registrar os valores manualmente.'; try{await storePdf(file);}catch(e){} }
-});
-$('openSavedPdfBtn')?.addEventListener('click',async()=>{ if(state.profileId!=='livia') return; const file=await loadPdf(); if(!file){toast('Nenhum PDF salvo neste dispositivo.');return;} const url=URL.createObjectURL(file); window.open(url,'_blank','noopener'); setTimeout(()=>URL.revokeObjectURL(url),60000); });
+function dateToIso(br){const[d,m,y]=br.split('/');return`${y}-${m}-${d}`;}
+function mergePdfData(parsed){const measures=getHealth('measures'),weekly=getHealth('weekly');parsed.dates.forEach((d,idx)=>{const date=dateToIso(d),m={date};let has=false;['neck','waist','hip','abdomen','armL','armR','thighL','thighR','calf'].forEach(k=>{const v=parsed.values[k]?.[idx];if(v!==null&&v!==undefined){m[k]=v;has=true;}});if(has){const mi=measures.findIndex(x=>x.date===date);if(mi>=0)measures[mi]={...measures[mi],...m};else measures.push(m);}const w=parsed.values.weight?.[idx];if(w!==null&&w!==undefined){const wi=weekly.findIndex(x=>x.date===date);if(wi>=0)weekly[wi].weight=w;else weekly.push({date,weight:w,dose:'',note:'Peso importado da avaliação PDF'});}});setHealth('measures',measures);setHealth('weekly',weekly);}
+$('importPdfBtn')?.addEventListener('click',async()=>{if(state.profileId!=='livia')return;const file=$('pdfInput')?.files?.[0];if(!file){toast('Selecione um PDF primeiro.');return;}$('pdfStatus').textContent='Lendo o PDF...';try{const parsed=await parseAssessmentPdf(file);mergePdfData(parsed);await storePdf(file);$('pdfStatus').textContent=`PDF importado. ${parsed.dates.length} data(s) de avaliação encontradas.`;renderHealth();toast('PDF importado e evolução atualizada.');}catch(err){console.error(err);$('pdfStatus').textContent='Não consegui ler automaticamente este formato. O PDF foi mantido no aparelho.';try{await storePdf(file);}catch(e){}}});
+$('openSavedPdfBtn')?.addEventListener('click',async()=>{if(state.profileId!=='livia')return;const file=await loadPdf();if(!file){toast('Nenhum PDF salvo neste dispositivo.');return;}const url=URL.createObjectURL(file);window.open(url,'_blank','noopener');setTimeout(()=>URL.revokeObjectURL(url),60000);});
 
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && state.timer.running) requestWakeLock(); });
-['soundToggle','vibrationToggle','wakeToggle'].forEach(id=>$(id).addEventListener('change',saveSettings));
+['soundToggle','vibrationToggle','wakeToggle'].forEach(id=>$(id)?.addEventListener('change',saveSettings));
 
 if ('serviceWorker' in navigator) window.addEventListener('load',async()=>{
   const local=['localhost','127.0.0.1'].includes(location.hostname) || location.protocol==='file:';

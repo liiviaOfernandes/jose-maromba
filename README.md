@@ -1,20 +1,15 @@
-# Maromba Duo V3
+# Maromba Duo V4 Pro
 
-Versão com dois perfis, timer por série, cargas, vídeos, calendário mensal de frequência, tempo de treino e histórico individual.
+Versão web/PWA para GitHub Pages.
 
-## Logins
-- José: `jose@gostoso.com`
-- Livia: `livia@maromba.com`
+Novidades:
+- calendário horizontal na tela inicial, estilo acompanhamento diário;
+- status de feito, faltou, programado e descanso;
+- animação de conclusão com confete;
+- lembretes dramáticos via notificação quando o navegador permitir;
+- evolução nos dois perfis: peso semanal + medidas mensais;
+- Livia: registro de canetas junto do peso e importação do PDF;
+- Livia em rosa suave; José em cinza/chumbo;
+- desenvolvimento em localhost sem cache antigo do Service Worker.
 
-## Novidades V3
-- Calendário mensal: treinou, faltou, programado e descanso.
-- Tempo por sessão e média mensal.
-- Novo plano do José (Push/Pull/Inferiores/Core/Superiores).
-- Plano da Livia alterna a ordem semanal: uma semana começa com perna e a seguinte com superiores.
-- Dois treinos diferentes de superiores para Livia.
-- Funcional leve inspirado no HYROX.
-- Área privada da Livia para peso/doses/medidas/PDF mantida.
-- Service Worker desativado automaticamente em localhost para evitar cache antigo durante desenvolvimento.
-
-## Teste local
-Use Live Server ou Laragon. Durante desenvolvimento no localhost, o app não registra Service Worker.
+Observação: a versão atual pode notificar ao abrir/usar o app. Notificações agendadas com o app totalmente fechado exigem Web Push/backend.

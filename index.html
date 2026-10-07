@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0e0d" />
-  <meta name="description" content="Maromba Duo - treinos, calendário, frequência, cargas, intervalos e evolução." />
+  <meta name="description" content="Maromba Duo — treino, calendário, evolução corporal e consistência." />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,53 +55,51 @@
       <button id="logoutBtn" class="avatar-button" title="Sair"><span id="avatarButtonText">M</span></button>
     </header>
 
+
     <section id="homeScreen" class="screen active-screen">
+      <article class="flo-calendar-card">
+        <div class="flo-calendar-head">
+          <div>
+            <span class="eyebrow">SEU RITMO</span>
+            <h3 id="homeCalendarMonth">—</h3>
+          </div>
+          <div class="calendar-nav">
+            <button id="homeCalendarPrev" class="circle-button small" type="button" aria-label="Mês anterior">←</button>
+            <button id="homeCalendarNext" class="circle-button small" type="button" aria-label="Próximo mês">→</button>
+          </div>
+        </div>
+        <div id="homeCalendarStrip" class="flo-calendar-strip" aria-label="Calendário de treinos"></div>
+        <div id="selectedDayStatus" class="selected-day-status"></div>
+      </article>
+
       <div class="hero-card">
         <div>
           <span class="chip" id="todayChip">HOJE</span>
           <h3 id="todayWorkoutTitle">Treino</h3>
           <p id="todayWorkoutSubtitle">Seu treino do dia aparece aqui.</p>
         </div>
-        <div class="hero-orbit" aria-hidden="true">
-          <span id="heroEmoji">💪</span>
-        </div>
+        <div class="hero-orbit" aria-hidden="true"><span id="heroEmoji">M²</span></div>
         <button id="startTodayBtn" class="primary-button">Começar treino</button>
       </div>
 
-      <div class="section-heading">
+      <div id="dramaticReminder" class="dramatic-reminder hidden">
+        <div class="dramatic-avatar">M²</div>
         <div>
-          <span class="eyebrow">SEMANA</span>
-          <h3>Plano de treino</h3>
+          <span class="eyebrow">MAROMBA DUO ESTÁ DE OLHO</span>
+          <strong id="dramaticTitle">Seu treino ainda está esperando.</strong>
+          <p id="dramaticText">Ele não vai se concluir sozinho.</p>
         </div>
       </div>
-      <div id="weekGrid" class="week-grid"></div>
 
       <div class="section-heading compact">
-        <div>
-          <span class="eyebrow">PROGRESSO</span>
-          <h3>Seu histórico</h3>
-        </div>
+        <div><span class="eyebrow">RESUMO</span><h3>Seu mês até aqui</h3></div>
       </div>
-      <div class="stats-grid">
-        <article class="stat-card">
-          <span class="stat-icon">✓</span>
-          <strong id="completedCount">0</strong>
-          <small>treinos concluídos</small>
-        </article>
-        <article class="stat-card">
-          <span class="stat-icon">⏱</span>
-          <strong id="totalMinutes">0</strong>
-          <small>minutos registrados</small>
-        </article>
+      <div class="stats-grid stats-grid-3">
+        <article class="stat-card"><span class="stat-icon">✓</span><strong id="completedCount">0</strong><small>treinos concluídos</small></article>
+        <article class="stat-card"><span class="stat-icon">◷</span><strong id="totalMinutes">0</strong><small>minutos treinados</small></article>
+        <article class="stat-card"><span class="stat-icon">↗</span><strong id="streakCount">0</strong><small>sequência atual</small></article>
       </div>
-
-      <div class="tip-card">
-        <span>⚡</span>
-        <div>
-          <strong>Dica rápida</strong>
-          <p>Marque cada série. O intervalo começa automaticamente e você pode ajustar entre 45 s e 2 min.</p>
-        </div>
-      </div>
+      <div id="weekGrid" class="week-grid hidden"></div>
     </section>
 
     <section id="workoutsScreen" class="screen">
@@ -138,26 +136,25 @@
     </section>
 
 
+
     <section id="healthScreen" class="screen">
       <div class="page-title">
-        <span class="eyebrow">ACOMPANHAMENTO PESSOAL</span>
-        <h2>Minha evolução</h2>
-        <p>Registro privado de doses, peso, medidas mensais e avaliações em PDF. Os dados ficam salvos somente neste navegador.</p>
-      </div>
-
-      <div class="health-warning">
-        <span>♡</span>
-        <div><strong>Registro, não orientação médica</strong><p>Use esta área para anotar a dose prescrita e sua evolução. O app não sugere aumento, redução ou mudança de medicamento.</p></div>
+        <span class="eyebrow">EVOLUÇÃO</span>
+        <h2>Corpo & progresso</h2>
+        <p id="healthIntro">Peso semanal e medidas mensais, separados por perfil.</p>
       </div>
 
       <div class="health-grid">
         <article class="health-card">
-          <div class="health-card-head"><div><span class="eyebrow">SEMANAL</span><h3>Mounjaro + peso</h3></div><span class="health-icon">💉</span></div>
+          <div class="health-card-head">
+            <div><span class="eyebrow">SEMANAL</span><h3 id="weeklyHealthTitle">Peso</h3></div>
+            <span class="health-monogram">W</span>
+          </div>
           <form id="doseForm" class="health-form">
             <label><span>Data</span><input id="doseDate" type="date" required></label>
-            <label><span>Dose aplicada (mg)</span><input id="doseMg" type="number" min="0" step="0.5" placeholder="Ex.: 2.5" required></label>
-            <label><span>Peso (kg)</span><input id="weeklyWeight" type="number" min="0" step="0.1" placeholder="Ex.: 150.2" required></label>
-            <label class="full"><span>Observação (opcional)</span><input id="doseNote" type="text" maxlength="120" placeholder="Ex.: dose prescrita, local da aplicação..."></label>
+            <label id="doseFieldWrap"><span>Caneta aplicada (mg)</span><input id="doseMg" type="number" min="0" step="0.5" placeholder="Ex.: 2.5"></label>
+            <label><span>Peso (kg)</span><input id="weeklyWeight" type="number" min="0" step="0.1" placeholder="Ex.: 95.4" required></label>
+            <label class="full"><span>Observação (opcional)</span><input id="doseNote" type="text" maxlength="120" placeholder="Como foi a semana?"></label>
             <button class="primary-button wide full" type="submit">Salvar semana</button>
           </form>
           <div id="doseSummary" class="mini-summary"></div>
@@ -165,7 +162,10 @@
         </article>
 
         <article class="health-card">
-          <div class="health-card-head"><div><span class="eyebrow">MENSAL</span><h3>Medidas corporais</h3></div><span class="health-icon">📏</span></div>
+          <div class="health-card-head">
+            <div><span class="eyebrow">MENSAL</span><h3>Medidas corporais</h3></div>
+            <span class="health-monogram">CM</span>
+          </div>
           <form id="measureForm" class="health-form measures-form">
             <label><span>Data</span><input id="measureDate" type="date" required></label>
             <label><span>Pescoço (cm)</span><input data-measure="neck" type="number" step="0.1"></label>
@@ -183,9 +183,12 @@
         </article>
       </div>
 
-      <article class="health-card pdf-health-card">
-        <div class="health-card-head"><div><span class="eyebrow">AVALIAÇÃO</span><h3>Importar PDF de evolução</h3></div><span class="health-icon">📄</span></div>
-        <p class="health-copy">Selecione um PDF no mesmo formato da sua avaliação. O app tenta ler as datas, pesos e medidas automaticamente e salva o PDF apenas neste dispositivo.</p>
+      <article id="liviaPdfCard" class="health-card pdf-health-card">
+        <div class="health-card-head">
+          <div><span class="eyebrow">LIVIA • AVALIAÇÃO</span><h3>Importar PDF de evolução</h3></div>
+          <span class="health-monogram">PDF</span>
+        </div>
+        <p class="health-copy">O PDF fica neste dispositivo. O sistema tenta atualizar automaticamente peso e medidas encontradas na avaliação.</p>
         <input id="pdfInput" class="file-input" type="file" accept="application/pdf">
         <div class="pdf-actions">
           <button id="importPdfBtn" class="primary-button" type="button">Importar e atualizar</button>
@@ -194,6 +197,7 @@
         <div id="pdfStatus" class="pdf-status">Nenhum PDF importado neste dispositivo.</div>
       </article>
     </section>
+
 
     <section id="profileScreen" class="screen">
       <div class="page-title">
@@ -220,6 +224,13 @@
           <div><strong>Manter tela ativa</strong><span>Tenta evitar que a tela apague durante o timer.</span></div>
           <label class="switch"><input id="wakeToggle" type="checkbox" checked><span></span></label>
         </div>
+        <div class="setting-row notification-setting">
+          <div><strong>Lembretes dramáticos</strong><span>Permita notificações para receber cobranças no estilo Maromba Duo quando abrir o app.</span></div>
+          <div class="notification-actions">
+            <button id="notificationBtn" class="secondary-button mini-button" type="button">Ativar</button>
+            <button id="testNotificationBtn" class="text-button mini-button" type="button">Testar</button>
+          </div>
+        </div>
       </div>
       <div class="source-card">
         <strong>Plano atual</strong>
@@ -229,9 +240,9 @@
 
     <nav class="bottom-nav" aria-label="Navegação principal">
       <button class="nav-item active" data-target="homeScreen"><span>⌂</span><small>Início</small></button>
-      <button class="nav-item" data-target="workoutsScreen"><span>▤</span><small>Treinos</small></button>
-      <button class="nav-item" data-target="historyScreen"><span>↗</span><small>Histórico</small></button>
-      <button id="healthNavBtn" class="nav-item hidden" data-target="healthScreen"><span>♡</span><small>Evolução</small></button>
+      <button class="nav-item" data-target="workoutsScreen"><span>▦</span><small>Treinos</small></button>
+      <button class="nav-item" data-target="historyScreen"><span>◫</span><small>Histórico</small></button>
+      <button id="healthNavBtn" class="nav-item" data-target="healthScreen"><span>◉</span><small>Evolução</small></button>
       <button class="nav-item" data-target="profileScreen"><span>⚙</span><small>Ajustes</small></button>
     </nav>
   </div>
@@ -292,6 +303,19 @@
       </div>
       <div id="videoBox" class="video-box"></div>
       <div id="videoTips" class="video-tips"></div>
+    </div>
+  </div>
+
+
+  <div id="completionOverlay" class="completion-overlay hidden" aria-live="assertive">
+    <div id="confettiLayer" class="confetti-layer"></div>
+    <div class="completion-card">
+      <div class="completion-mascot"><div class="mascot-face">M²</div><span class="mascot-ring"></span></div>
+      <span class="eyebrow">TREINO CONCLUÍDO</span>
+      <h2 id="completionTitle">Você apareceu. Isso conta.</h2>
+      <p id="completionText">Mais um treino registrado.</p>
+      <div class="completion-stat"><strong id="completionMinutes">0</strong><span>min treinados</span></div>
+      <button id="closeCompletionBtn" class="primary-button wide" type="button">Continuar</button>
     </div>
   </div>
 
